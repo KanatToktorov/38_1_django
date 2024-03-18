@@ -1,27 +1,15 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Main page</title>
-</head>
-<body>
-    <h1>
-        Welcome to the main page! {{ name }}
-    </h1>
 
-    <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis eius consequuntur architecto ab nemo minus similique repellendus. Quos molestias reprehenderit qui laborum error, corrupti recusandae cum, molestiae nobis ratione nisi!
-    </p>
+{% extends "components/navbar.html" %}
+{% block content %}
 
-    {% for data in mock_data %}
-        {% if not data.id == 2 %}
-            <h2>
-                {{ data.id }} {{ data.name }} - {{ data.age }}
-            </h2>
-        {% endif %}
-    {% endfor %}
-</body>
-</html>
+<img src="https://preply.com/wp-content/uploads/2018/04/shopping_bags.jpg" width="300">
+
+<h1>
+    Welcome to the main page!
+</h1>
+
+<p>
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis eius consequuntur architecto ab nemo minus similique repellendus. Quos molestias reprehenderit qui laborum error, corrupti recusandae cum, molestiae nobis ratione nisi!
+</p>
+
+{% endblock %}

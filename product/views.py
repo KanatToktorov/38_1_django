@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from datetime import datetime
+from product.models import Product
 
 
 def hello_view(request):
@@ -40,3 +41,14 @@ def main_page_view(request):
     context = {'name': 'Kanat', 'mock_data': MOCK_DATA}
     if request.method == 'GET':
         return render(request, 'main.html', context=context)
+
+
+def product_list_view(request):
+    # 1. Достаем все посты из базы данных
+    products = Product.objects.all()
+
+    # 2. Передаем посты в контекст
+    context = {'products': products}
+
+    # 3. Отображаем шаблон
+    return render(request, 'product_list.html', context)
