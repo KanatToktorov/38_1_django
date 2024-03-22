@@ -1,0 +1,44 @@
+{% extends 'components/navbar.html' %}
+
+{% block content %}
+
+<h1>{{ product.title }}</h1>
+
+<p>{{ product.description }}</p>
+
+<p>Published on {{ product.created_at }} </p>
+
+<p>
+    Price: {{ product.price }}
+</p>
+
+
+<h1>
+    Сategories:
+</h1>
+
+{% for category in product.categories.all %}
+    <p>{{ category.name }}</p>
+{% endfor %}
+
+
+<h1>
+    Tags:
+</h1>
+
+{% for tag in product.tags.all %}
+    <p>{{ tag.name }}</p>
+{% endfor %}
+
+
+<h1>
+    Reviews:
+</h1>
+
+{% for review in product.reviews.all %}
+    <p>{{ review.text }}</p>
+    <p>Published on {{ review.created_at }}</p>
+{% endfor %}
+
+
+{% endblock %}

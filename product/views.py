@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from datetime import datetime
-from product.models import Product
+
+import product
+from product.models import Product, Category
 
 
 def hello_view(request):
@@ -51,4 +53,21 @@ def product_list_view(request):
     context = {'products': products}
 
     # 3. Отображаем шаблон
-    return render(request, 'product_list.html', context)
+    return render(request, 'product/product_list.html', context)
+
+
+def product_detail_view(request, product_id):
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return render(request, 'errors/404.html')
+
+    context = {'product': product}
+
+    return render(request, 'product/product_detail.html', context)
+
+
+def category_list_view(request):
+    categories = Category.objects.all()
+    context = {'product': product}
+    return render(request, 'product/product_detail.html', context)

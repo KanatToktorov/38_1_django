@@ -18,7 +18,8 @@ from django.contrib import admin
 from django.urls import path
 
 from product.views import (hello_view, main_page_view,
-                           current_date_view, goodbye_view, product_list_view)
+                           current_date_view, goodbye_view,
+                           product_list_view, product_detail_view, category_list_view)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,5 +27,7 @@ urlpatterns = [
     path('hello/', hello_view),
     path('current_date/', current_date_view),
     path('goodbye/', goodbye_view),
-    path('products/', product_list_view, name='product_list')
+    path('products/', product_list_view, name='product_list'),
+    path('products/<int:product_id>/', product_detail_view, name='product_detail'),
+    path('categories/', category_list_view, name='category_list'),
 ]

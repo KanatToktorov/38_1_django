@@ -20,14 +20,55 @@ CREATE TABLE product_product (
 
 from django.db import models
 
+class Category(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
 
 class Product(models.Model):
     image = models.ImageField(upload_to='product_images/%Y/%m/%d/', null=True, blank=True)
     title = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
     price = models.FloatField()
+    tags = models.ManyToManyField(
+        Tag,
+        related_name='products',
+        blank=True
+    )
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        related_name='products',
+        default=None,
+        null=True,
+        blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.title} - {self.price}"
+
+
+
+class Review(models.Model):
+    product = models.ForeignKey(
+        Product, # К какой модели относится
+        on_delete=models.CASCADE, # Что делать с комментарием, если пост удален
+        related_name='reviews' # default: review_set. Позволяет обращаться к отзывам через product.reviews
+    )
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.product.title} - {self.text}"
