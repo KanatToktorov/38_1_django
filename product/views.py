@@ -66,8 +66,7 @@ def product_detail_view(request, product_id):
 
     return render(request, 'product/product_detail.html', context)
 
-
 def category_list_view(request):
     categories = Category.objects.all()
-    context = {'product': product}
-    return render(request, 'product/product_detail.html', context)
+    return render(request, 'categories/category_list.html', {'categories': categories})
+

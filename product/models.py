@@ -35,7 +35,7 @@ class Tag(models.Model):
 
 
 class Product(models.Model):
-    image = models.ImageField(upload_to='product_images/%Y/%m/%d/', null=True, blank=True)
+    image = models.ImageField("Картинка", upload_to='product_images/%Y/%m/%d/', null=True, blank=True)
     title = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
     price = models.FloatField()
@@ -58,7 +58,11 @@ class Product(models.Model):
     def __str__(self):
         return f"{self.title} - {self.price}"
 
-
+class Meta:
+    db_table = 'product'
+    verbose_name = 'Продукт'
+    verbose_name_plural = 'Продукты'
+    ordering = ['-created_at']
 
 class Review(models.Model):
     product = models.ForeignKey(
