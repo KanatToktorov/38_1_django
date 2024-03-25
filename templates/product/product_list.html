@@ -1,11 +1,16 @@
 {% extends 'components/navbar.html' %}
+{% load static %}
 
 {% block content %}
 <h1>Products</h1>
 
 {% for product in products %}
     <div class="card" style="width: 18rem;">
-        <img src="{{ product.image }}" class="card-img-top" alt="...">
+        {% if product.image %}
+            <img src="/media/{{ product.image }}" class="card-img-top" alt="...">
+        {% else %}
+            <img src="{% static 'default_image.jpeg' %}" class="card-img-top" alt="...">
+        {% endif %}
         <div class="card-body">
             <h5 class="card-title">{{ product.title }} {{ product.price }}</h5>
             <p class="card-text">{{ product.description }}</p>

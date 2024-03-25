@@ -21,6 +21,7 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ('title', 'content')
     readonly_fields = ('created_at', 'updated_at', 'price', 'id')
 
+
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
     pass

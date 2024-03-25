@@ -1,8 +1,9 @@
 
 {% extends "components/navbar.html" %}
 {% block content %}
+{% load static %}
 
-<img src="https://preply.com/wp-content/uploads/2018/04/shopping_bags.jpg" width="300">
+<img src="{% static 'site_logo.jpg' %}" width="300">
 
 <h1>
     Welcome to the main page!
