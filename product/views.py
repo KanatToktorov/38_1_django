@@ -1,9 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from datetime import datetime
 
 import product
-from product.models import Product, Category
+from product.models import Product, Category, Review
+from product.forms import ProductForm2, ReviewForm
 
 
 def hello_view(request):
@@ -46,10 +47,10 @@ def main_page_view(request):
 
 
 def product_list_view(request):
-    # 1. Достаем все посты из базы данных
+    # 1. Достаем все продукты из базы данных
     products = Product.objects.all()
 
-    # 2. Передаем посты в контекст
+    # 2. Передаем продукты в контекст
     context = {'products': products}
 
     # 3. Отображаем шаблон
@@ -57,17 +58,61 @@ def product_list_view(request):
 
 
 def product_detail_view(request, product_id):
-    try:
-        product = Product.objects.get(id=product_id)
-    except Product.DoesNotExist:
-        return render(request, 'errors/404.html')
+    if request.method == 'GET':
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return render(request, 'errors/404.html')
 
-    context = {'product': product}
+        context = {'product': product, 'form': ReviewForm}
 
-    return render(request, 'product/product_detail.html', context)
+        return render(request, 'product/product_detail.html', context)
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            Review.objects.create(product_id=product_id, **form.cleaned_data)
+            return redirect(f'/products/{product_id}/')
+        context = {
+            'form': form,
+        }
+        return render(request, 'products/product_detail.html', context)
+
 
 def category_list_view(request):
     categories = Category.objects.all()
     return render(request, 'categories/category_list.html', {'categories': categories})
+
+
+def product_create_view(request):
+    if request.method == 'GET':
+        form = ProductForm2()
+        return render(request, 'product/product_create.html', {'form': form})
+
+    if request.method == 'POST':
+        form = ProductForm2(request.POST, request.FILES)
+        # form.add_error('content', 'Текст не должен содержать слово Python!')
+
+        if not form.is_valid():
+            return render(request, 'product/product_create.html', {'form': form})
+
+        title = form.cleaned_data.get('title')
+        description = form.cleaned_data.get('description')
+        image = form.cleaned_data.get('image')
+        price = form.cleaned_data.get('price')
+        tags = form.cleaned_data.get('tags')
+
+        product = Product.objects.create(
+            title=title,
+            description=description,
+            image=image,
+            price=price,
+        )
+
+        product.tags.set(tags)
+        # product.tags.add(1)
+        product.save()
+
+        return redirect('product_list')
 
 

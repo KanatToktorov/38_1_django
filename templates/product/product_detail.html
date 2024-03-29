@@ -2,6 +2,8 @@
 
 {% block content %}
 
+<img src="/media/{{ post.image }}" alt="">
+
 <h1>{{ product.title }}</h1>
 
 <p>{{ product.description }}</p>
@@ -22,14 +24,25 @@
 {% endfor %}
 
 
-<h1>
-    Reviews:
-</h1>
+<h2>Add Review</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit Review</button>
+</form>
 
-{% for review in product.reviews.all %}
-    <p>{{ review.text }}</p>
-    <p>Published on {{ review.created_at }}</p>
-{% endfor %}
+
+<h2>Reviews</h2>
+<ul>
+    {% for review in product.reviews.all %}
+        <li>{{ review.text }} - {{ review.created_at }}</li>
+    {% empty %}
+        <li>No reviews yet.</li>
+    {% endfor %}
+</ul>
 
 
 {% endblock %}
+
+
+
