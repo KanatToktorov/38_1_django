@@ -19,7 +19,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ('title', 'price', 'created_at', 'updated_at')
     list_filter = ('created_at', 'updated_at')
     search_fields = ('title', 'content')
-    readonly_fields = ('created_at', 'updated_at', 'price', 'id')
+    readonly_fields = ('created_at', 'updated_at', 'id')
 
 
 @admin.register(Review)

@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'product',
+    'user.apps.UserConfig',
 ]
 
 MIDDLEWARE = [
@@ -118,6 +120,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
+
+AUTH_USER_MODEL = 'user.Users'
 
 STATIC_URL = 'static/'
 

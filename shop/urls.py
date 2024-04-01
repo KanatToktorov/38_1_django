@@ -24,6 +24,8 @@ from product.views import (hello_view, main_page_view,
                            product_list_view, product_detail_view,
                            category_list_view, product_create_view)
 
+from user.views import register_view, login_view, profile_view, logout_view
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', main_page_view),
@@ -33,6 +35,12 @@ urlpatterns = [
     path('products/', product_list_view, name='product_list'),
     path('products/<int:product_id>/', product_detail_view, name='product_detail'),
     path('categories/', category_list_view, name='category_list'),
-    path('products/create/', product_create_view, name='product_create')
+    path('products/create/', product_create_view, name='product_create'),
+
+    path('auth/register/', register_view, name='register'),
+    path('auth/login/', login_view, name='login'),
+    path('auth/logout/', logout_view, name='logout'),
+
+    path('auth/profile/', profile_view, name='profile'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

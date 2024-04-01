@@ -35,6 +35,13 @@ class Tag(models.Model):
 
 
 class Product(models.Model):
+    user = models.ForeignKey(
+        'user.Users', # К какой модели относится
+        on_delete=models.CASCADE, # Что делать с продуктом, если пользователь удален
+        related_name='products', # default: post_set. Позволяет обращаться к продуктам через user.products
+        null=True,
+        blank=False
+    )
     image = models.ImageField("Картинка", upload_to='product_images/%Y/%m/%d/', null=True, blank=True)
     title = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
@@ -67,12 +74,19 @@ class Meta:
 class Review(models.Model):
     product = models.ForeignKey(
         Product, # К какой модели относится
-        on_delete=models.CASCADE, # Что делать с комментарием, если пост удален
+        on_delete=models.CASCADE, # Что делать с отзывом, если продукт удален
         related_name='reviews' # default: review_set. Позволяет обращаться к отзывам через product.reviews
     )
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(
+        'user.Users', # К какой модели относится
+        on_delete=models.CASCADE, # Что делать с отзывом, если пользователь удален
+        related_name='reviews', # default: post_set. Позволяет обращаться к отзывам через user.reviews
+        null=True,
+        blank=False
+    )
 
     def __str__(self):
         return f"{self.product.title} - {self.text}"

@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from datetime import datetime
+from django.contrib.auth.decorators import login_required
 
 import product
 from product.models import Product, Category, Review
 from product.forms import ProductForm2, ReviewForm
+
 
 
 def hello_view(request):
@@ -45,10 +47,10 @@ def main_page_view(request):
     if request.method == 'GET':
         return render(request, 'main.html', context=context)
 
-
+@login_required
 def product_list_view(request):
     # 1. Достаем все продукты из базы данных
-    products = Product.objects.all()
+    products = Product.objects.all().exclude(user=request.user)
 
     # 2. Передаем продукты в контекст
     context = {'products': products}
@@ -83,7 +85,7 @@ def category_list_view(request):
     categories = Category.objects.all()
     return render(request, 'categories/category_list.html', {'categories': categories})
 
-
+@login_required(login_url='/auth/login')
 def product_create_view(request):
     if request.method == 'GET':
         form = ProductForm2()
@@ -107,6 +109,7 @@ def product_create_view(request):
             description=description,
             image=image,
             price=price,
+            user=request.user
         )
 
         product.tags.set(tags)

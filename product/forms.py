@@ -55,7 +55,7 @@ from product.models import Product, Review
 class ProductForm2(forms.ModelForm):
     class Meta:
         model = Product
-        fields = "__all__"
+        exclude = ['user', 'created_at', 'updated_at']
         widgets = {
             'title': forms.TextInput(
                 attrs={
