@@ -1,5 +1,6 @@
 from django import forms
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from user.models import Users
 
 
 class RegisterForm(forms.Form):
@@ -136,3 +137,12 @@ class LoginForm(forms.Form):
             }
         )
     )
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Users
+        fields = ['avatar', 'age', 'bio']
+
+
+
+

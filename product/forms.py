@@ -69,11 +69,11 @@ class ProductForm2(forms.ModelForm):
                     'placeholder': 'Введите описание'
                 }
             ),
-            'image': forms.FileInput(
-                attrs={
-                    'class': 'form-control'
-                }
-            ),
+            # 'image': forms.FileInput(
+            #     attrs={
+            #         'class': 'form-control'
+            #     }
+            # ),
             'tags': forms.SelectMultiple(
                 attrs={
                     'class': 'form-control'

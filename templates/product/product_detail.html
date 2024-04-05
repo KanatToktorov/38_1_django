@@ -3,10 +3,10 @@
 {% block content %}
 
 <p>
-    Author: {{ post.user }}
+    Author: {{ product.user }}
 </p>
 
-<img src="/media/{{ post.image }}" alt="">
+<img src="/media/{{ product.image }}" alt="">
 
 <h1>{{ product.title }}</h1>
 
@@ -18,6 +18,14 @@
     Price: {{ product.price }}
 </p>
 
+{% if product.user == user %}
+    <button>
+        <a href="update/">Update Product</a>
+    </button>
+    <button>
+        <a href="delete/">Delete Product</a>
+    </button>
+{% endif %}
 
 <h1>
     Tags:

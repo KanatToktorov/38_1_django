@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 import product
-from product.models import Product, Category, Review
+from product.models import Product, Category, Review, Tag
 from product.forms import ProductForm2, ReviewForm
 
 
@@ -49,14 +50,60 @@ def main_page_view(request):
 
 @login_required
 def product_list_view(request):
-    # 1. Достаем все продукты из базы данных
-    products = Product.objects.all().exclude(user=request.user)
+    search = request.GET.get('search')
+    sort = request.GET.get('sort', 'created_at')
+    tag = request.GET.get('tag')
+    page = request.GET.get('page', 1)
 
-    # 2. Передаем продукты в контекст
-    context = {'products': products}
+    products = Product.objects.all()
 
-    # 3. Отображаем шаблон
+    if search:
+        products = products.filter(
+            Q(title__icontains=search) | Q(content__icontains=search)
+        )
+        # products = products.filter(title__icontains=search) | products.filter(description__icontains=search)
+        # icontains - case-insensitive search
+        # contains - case-sensitive search
+
+    if tag:
+        products = products.filter(tags__id=tag)
+
+    products = products.order_by(sort)
+
+    limit = 3
+    # posts = [post1, post2, post3, post4, post5, post6, post7, post8, post9, post10]
+    # page = 1, limit = 3
+
+    # formula:
+    # start = (page - 1) * limit
+    # end = page * limit
+
+    start = (int(page) - 1) * limit
+    end = int(page) * limit
+
+    all_pages = len(products) / limit
+    if round(all_pages) < all_pages:
+        all_pages += 1
+    all_pages = round(all_pages)
+
+    tags = Tag.objects.all()
+    context = {
+        'products': products[start:end],
+        'tags': tags,
+        'all_pages': range(1, all_pages + 1)
+    }
+
     return render(request, 'product/product_list.html', context)
+# @login_required
+# def product_list_view(request):
+#     # 1. Достаем все продукты из базы данных
+#     products = Product.objects.all().exclude(user=request.user)
+#
+#     # 2. Передаем продукты в контекст
+#     context = {'products': products}
+#
+#     # 3. Отображаем шаблон
+#     return render(request, 'product/product_list.html', context)
 
 
 def product_detail_view(request, product_id):
@@ -119,3 +166,29 @@ def product_create_view(request):
         return redirect('product_list')
 
 
+def product_change_view(request, product_id):
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return render(request, 'errors/404.html')
+
+    if request.method == 'GET':
+        form = ProductForm2(instance=product)
+        return render(request, 'product/product_change.html', {'form': form})
+    if request.method == 'POST':
+        form = ProductForm2(request.POST, request.FILES, instance=product)
+        if not form.is_valid():
+            return render(request, 'product/product_change.html', {'form': form})
+
+        form.save()
+        return redirect('product_list')
+
+
+def product_delete_view(request, product_id):
+    try:
+        post = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return render(request, 'errors/404.html')
+
+    post.delete()
+    return redirect('product_list')

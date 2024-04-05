@@ -2,26 +2,71 @@
 {% load static %}
 
 {% block content %}
-<h1>Products</h1>
-
-{% for product in products %}
-    <div class="card" style="width: 18rem;">
-        {% if product.image %}
-            <img src="/media/{{ product.image }}" class="card-img-top" alt="...">
-        {% else %}
-            <img src="{% static 'default_image.jpeg' %}" class="card-img-top" alt="...">
-        {% endif %}
-        <div class="card-body">
-            <h5 class="card-title">{{ product.title }} {{ product.price }}</h5>
-            <p class="card-text">{{ product.description }}</p>
-            <!-- author -->
-            <p class="card-text">Автор: {{ product.user }}</p>
-            {% for tag in product.tags.all %}
-                <a href="#" class="btn btn-secondary">{{ tag.name }}</a>
-            {% endfor %}
-            <a href="{{ product.id }}" class="btn btn-primary">More</a>
+<h1 class="text-center">Products</h1>
+<!-- search -->
+<form method="GET" action="">
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Searc products" name="search" value="{{ request.GET.search }}">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit">Search</button>
         </div>
     </div>
-{% endfor %}
+</form>
+
+<!-- Tags -->
+<div class="btn-group" role="group" aria-label="Basic example">
+    <a href="/products/" class="btn btn-secondary">All</a>
+    {% for tag in tags %}
+        <a href="?tag={{ tag.id }}" class="btn btn-secondary">{{ tag.name }}</a>
+    {% endfor %}
+</div>
+
+
+<!-- Sort by -->
+<form method="GET" action="">
+    <div class="input-group mb-3">
+        <select class="custom-select" name="sort">
+            <option value="created_at">По дате</option>
+            <option value="-created_at">По дате (обратно)</option> <!-- "-" - reverse order -->
+            <option value="price">По цене</option>
+            <option value="-price">По цене (обратно)</option>
+            <option value="title">По названию</option>
+            <option value="-title">По названию (обратно)</option>
+        </select>
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit">Sort</button>
+        </div>
+    </div>
+</form>
+<div style="display: flex; flex-wrap: wrap;">
+    {% for product in products %}
+        <div class="card" style="width: 18rem;">
+            {% if product.image %}
+                <img src="/media/{{ product.image }}" class="card-img-top" alt="...">
+            {% else %}
+                <img src="{% static 'default_image.jpeg' %}" class="card-img-top" alt="...">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ product.title }} {{ product.price }}</h5>
+                <p class="card-text">{{ product.description }}</p>
+                <!-- author -->
+                <p class="card-text">Author: {{ product.user }}</p>
+                {% for tag in product.tags.all %}
+                    <a href="#" class="btn btn-secondary">{{ tag.name }}</a>
+                {% endfor %}
+                <a href="{{ product.id }}" class="btn btn-primary">More</a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Paggination -->
+<div style="margin-top: auto;" class="d-flex justify-content-center">
+    {% for page in all_pages %}
+        <a href="?page={{ page }}" style="margin: 5px;">
+            <h1>{{ page }}</h1>
+        </a>
+    {% endfor %}
+</div>
 
 {% endblock %}
