@@ -1,13 +1,124 @@
+import random
+
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.http import HttpResponse
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.views import View
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 import product
 from product.models import Product, Category, Review, Tag
 from product.forms import ProductForm2, ReviewForm
 
+
+# class ProductDeleteView(DeleteView):
+#     model = Product
+#     template_name = 'product/product_delete.html' # default: <app>/<model>_confirm_delete.html
+#     success_url = '/products/'
+#     pk_url_kwarg = 'product_id' # default: pk
+
+#     def get_absolute_url(self):
+#         if self.request.user.is_authenticated:
+#             return reverse('post_list')
+#         return reverse('login')
+
+
+class ProductUpdateView(UpdateView):
+    model = Product
+    form_class = ProductForm2
+    template_name = 'product/product_change.html'
+    pk_url_kwarg = 'product_id'
+    success_url = '/product/'
+
+    def get_absolute_url(self):
+        if self.request.user.is_authenticated:
+            return reverse('product_list')
+        return reverse('login')
+
+
+class ProductCreateView(CreateView):
+    model = Product
+    form_class = ProductForm2
+    template_name = 'product/product_create.html'
+    success_url = '/products/'
+
+    def get_absolute_url(self):
+        if self.request.user.is_authenticated:
+            return reverse('product_list')
+        return reverse('login')
+
+
+class ProductDetailView(DetailView):
+    model = Product
+    # template_name = 'product/detail.html'
+    context_object_name = 'product'
+    pk_url_kwarg = 'product_id'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comments'] = Review.objects.filter(product=self.object)
+        return context
+
+
+class ProductListView(ListView):
+    model = Product
+    template_name = 'product/list.html'  # default: <app>/<model>_list.html
+    context_object_name = 'product_list'  # default: object_list
+
+    def get_queryset(self):
+        search = self.request.GET.get('search')
+        sort = self.request.GET.get('sort', 'created_at')
+        tag = self.request.GET.get('tag')
+        page = self.request.GET.get('page', 1)
+
+        products = Product.objects.all()
+
+        start = (int(page) - 1) * 3
+        end = int(page) * 3
+
+        if search:
+            products = products.filter(
+                Q(title__icontains=search) | Q(description__icontains=search)
+            )
+
+        if tag:
+            products = products.filter(tags__id=tag)
+
+        return products.order_by(sort)[start:end]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tags'] = Tag.objects.all()
+        products = Product.objects.all()
+        limit = 3
+
+        all_pages = len(products) / limit
+
+        if round(all_pages) < all_pages:
+            all_pages += 1
+        all_pages = round(all_pages)
+
+        context['all_pages'] = range(1, all_pages + 1)
+        return context
+
+class CategoryListView(ListView):
+    model = Category
+    template_name = 'categories/category_list.html'  # default: <app>/<model>_list.html
+    context_object_name = 'categories'  # default: object_list
+
+    def get_queryset(self):
+        category = Category.objects.all()
+        return category
+
+
+
+class HelloView(View):
+    def get(self, request):
+        random_number = random.randint(1, 100)
+        return HttpResponse('Hello, World!' + str(random_number))
 
 
 def hello_view(request):
@@ -17,10 +128,18 @@ def hello_view(request):
 # def main_page_view(request):
 #     if request.method == 'GET':
 #         return render(request, 'main.html')
+class CurrentDateView(View):
+    def get(self, request):
+        now = datetime.now()
+        return HttpResponse(f"Current date: {now.strftime('%Y-%m-%d')}")
 
 def current_date_view(request):
     now = datetime.now()
     return HttpResponse(f"Current date: {now.strftime('%Y-%m-%d')}")
+
+class GoodbyeView(View):
+    def get(self, request):
+        return HttpResponse('Goodbye user2!')
 
 def goodbye_view(request):
     return HttpResponse('Goodbye user!')
@@ -93,7 +212,7 @@ def product_list_view(request):
         'all_pages': range(1, all_pages + 1)
     }
 
-    return render(request, 'product/product_list.html', context)
+    return render(request, 'product/list.html', context)
 # @login_required
 # def product_list_view(request):
 #     # 1. Достаем все продукты из базы данных
@@ -103,7 +222,7 @@ def product_list_view(request):
 #     context = {'products': products}
 #
 #     # 3. Отображаем шаблон
-#     return render(request, 'product/product_list.html', context)
+#     return render(request, 'product/list.html', context)
 
 
 def product_detail_view(request, product_id):
